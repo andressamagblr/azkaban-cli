@@ -49,12 +49,13 @@ class Azkaban(object):
         self.__user = None
         self.__session_id = None
 
-    def __validate_host(self, host):
+    def __validate_host(self, host: str) -> str:
         """ PRIVATE
         Receives a host and when the host ends with '/', will we return a host without the '/'.
-        :param host:
-        :return: host:
-        :rtype: str:
+        Args:
+            host: azkaban host
+        Returns:
+            host without the '/'
         """
         valid_host = host
 
@@ -145,12 +146,11 @@ class Azkaban(object):
         if not ignore_empty_responses:
             self.__catch_empty_response(exception, response_json)
 
-    def get_logged_session(self):
+    def get_logged_session(self) -> dict:
         """
         Method for return the host and session id of the logged session saved on the class
-
-        :return: A dictionary containing host, user and session_id as keys
-        :rtype: dict
+        Returns:
+            A dictionary containing host, user and session_id as keys
         """
 
         logged_session = {
@@ -161,13 +161,13 @@ class Azkaban(object):
 
         return logged_session
 
-    def set_logged_session(self, host, user, session_id):
+    def set_logged_session(self, host: str, user: str, session_id: str):
         """
         Method for set host, user and session_id, attributes of the class
-
-        :param str host: Azkaban hostname
-        :param str user: Azkaban username
-        :param str session_id: session.id received from a login request
+        Args:
+            host: Azkaban hostname
+            user: Azkaban username
+            session_id: session.id received from a login request
         """
 
         self.__host = host
@@ -179,7 +179,7 @@ class Azkaban(object):
 
         self.set_logged_session(None, None, None)
 
-    def login(self, host, user, password):
+    def login(self, host: str, user: str, password: str):
         """
         Login command, intended to make the request to Azkaban and treat the response properly
 
@@ -187,11 +187,12 @@ class Azkaban(object):
         password is wrong or could not connect to host, it returns false and do not change the host and session_id
         attribute from the class. If everything is fine, saves the new session_id and corresponding host as attributes
         in the class and returns True
-
-        :param str host: Azkaban hostname
-        :param str user: Username to login
-        :param str password: Password from user
-        :raises LoginError: when Azkaban api returns error in response
+        Args:
+            host: Azkaban hostname
+            user: Username to login
+            password: Password from user
+        Raises:
+            LoginError: when Azkaban api returns error in response
         """
 
         valid_host = self.__validate_host(host)
@@ -205,7 +206,7 @@ class Azkaban(object):
 
         logging.info('Logged as %s' % (user))
 
-    def upload(self, path, project=None, zip_name=None):
+    def upload(self, path: str, project: str=None, zip_name: str=None):
         """
         Upload command, intended to make the request to Azkaban and treat the response properly
 
@@ -217,11 +218,12 @@ class Azkaban(object):
         passed. If zip name is not passed as argument, the project name will be used for the zip.
 
         If project or path is wrong or if there is no session_id, it returns false. If everything is fine, returns True.
-
-        :param str path: path to be zipped and uploaded
-        :param str project: Project name on Azkaban, optional.
-        :param str zip_name: Zip name that will be created and uploaded, optional.
-        :raises UploadError: when Azkaban api returns error in response
+        Args:
+            path: path to be zipped and uploaded
+            project: Project name on Azkaban, optional
+            zip_name: Zip name that will be created and uploaded, optional
+        Raises:
+            UploadError: when Azkaban api returns error in response
         """
 
         self.__check_if_logged()
@@ -249,7 +251,7 @@ class Azkaban(object):
         response_json = response.json()
         logging.info('Project %s updated to version %s' % (project, response_json[u'version']))
 
-    def schedule(self, project, flow, cron, **execution_options):
+    def schedule(self, project: str, flow: str, cron: str, **execution_options: dict):
         """
         Schedule command, intended to make the request to Azkaban and treat the response properly.
 
@@ -258,11 +260,12 @@ class Azkaban(object):
 
         If project, flow or cron is wrong or if there is no session_id, it returns false. If everything is fine, returns
         True.
-
-        :param str project: Project name on Azkaban
-        :param str flow: Flow name on Azkaban
-        :param str cron: Cron expression, in quartz format [Eg.: '0*/10*?**' -> Every 10 minutes]
-        :raises ScheduleError: when Azkaban api returns error in response
+        Args:
+            project: Project name on Azkaban
+            flow: flow name on Azkaban
+            cron: Cron expression, in quartz format [Eg.: '0*/10*?**' -> Every 10 minutes]
+        Raises:
+            ScheduleError: when Azkaban api returns error in response
         """
 
         self.__check_if_logged()
@@ -285,7 +288,7 @@ class Azkaban(object):
         logging.info(response_json[u'message'])
         logging.info('scheduleId: %s' % (response_json[u'scheduleId']))
 
-    def fetch_flows(self, project):
+    def fetch_flows(self, project: str) -> json:
         """
         Fetch flows command, intended to make the request to Azkaban and treat the response properly.
 
@@ -294,9 +297,12 @@ class Azkaban(object):
 
         If project is wrong or there is no session_id, it returns false. If everything is fine, returns
         True.
-
-        :param str project: project name on Azkaban
-        :raises FetchFlowsError: when Azkaban api returns error in response
+        Args:
+            project_: project name on Azkaban
+        Raises:
+            FetchJobsFromFlowError: when Azkaban api returns error in response
+        Returns:
+            the json response from the request
         """
 
         self.__check_if_logged()
@@ -314,19 +320,20 @@ class Azkaban(object):
         logging.info('Project ID: %s' % (response_json[u'projectId']))
         return response_json
 
-    def fetch_jobs_from_flow(self, project, flow):
+    def fetch_jobs_from_flow(self, project: str, flow: str):
         """
         Fetch jobs of a flow command, intended to make the request to Azkaban and return
         the response.
 
         This method receives the project name and flow id, makes the fetch jobs of a flow request
         to fetch the jobs of a flow and evaluates the response.
-
-        Returns the json response from the request.
-
-        :param str project: project name on Azkaban
-        :param str flow: flow id on Azkaban
-        :raises FetchJobsFromFlowError: when Azkaban api returns error in response
+        Args:
+            project_id: project id on Azkaban
+            flow: flow name on Azkaban
+        Raises:
+            FetchJobsFromFlowError: when Azkaban api returns error in response
+        Returns:
+            the json response from the request
         """
 
         self.__check_if_logged()
@@ -343,7 +350,7 @@ class Azkaban(object):
 
         return response.json()
 
-    def fetch_schedule(self, project_id, flow):
+    def fetch_schedule(self, project_id: str, flow: str) -> json:
         """
         Fetch schedule command, intended to make the request to Azkaban and treat the response properly.
 
@@ -352,10 +359,13 @@ class Azkaban(object):
 
         If project_id or flow is wrong or there is no session_id, it returns false. If everything is fine, returns
         True.
-
-        :param str project_id: project id on Azkaban
-        :param str flow: flow name on Azkaban
-        :raises FetchScheduleError: when Azkaban api returns error in response
+        Args:
+            project_id: project id on Azkaban
+            flow: flow name on Azkaban
+        Raises:
+            FetchScheduleError: when Azkaban api returns error in response
+        Returns:
+            the json response from the request
         """
 
         self.__check_if_logged()
@@ -374,7 +384,7 @@ class Azkaban(object):
         logging.info('Schedule ID: %s' % (response_json[u'schedule'][u'scheduleId']))
         return response_json
 
-    def unschedule(self, schedule_id):
+    def unschedule(self, schedule_id: str):
         """
         Unschedule command, intended to make the request to Azkaban and treat the response properly.
 
@@ -383,9 +393,10 @@ class Azkaban(object):
 
         If schedule_id is wrong or there is no session_id, it returns false. If everything is fine, returns
         True.
-
-        :param str schedule_id: Schedule id on Azkaban
-        :raises UnscheduleError: when Azkaban api returns error in response
+        Args:
+            schedule_id: Schedule id on Azkaban
+        Raises:
+            UnscheduleError: when Azkaban api returns error in response
         """
 
         self.__check_if_logged()
@@ -402,7 +413,7 @@ class Azkaban(object):
         response_json = response.json()
         logging.info(response_json[u'message'])
 
-    def execute(self, project, flow, **execution_options):
+    def execute(self, project: str, flow: str, **execution_options: dict):
         """
         Execute command, intended to make the request to Azkaban and treat the response properly.
 
@@ -410,10 +421,11 @@ class Azkaban(object):
         response.
 
         If project or flow is wrong or if there is no session_id, it returns false. If everything is fine, returns True.
-
-        :param str project: Project name on Azkaban
-        :param str flow: Flow name on Azkaban
-        :raises ExecuteError: when Azkaban api returns error in response
+        Args:
+            project: Project name on Azkaban
+            flow: Flow name on Azkaban
+        Raises:
+            ExecuteError: when Azkaban api returns error in response
         """
 
         self.__check_if_logged()
@@ -434,7 +446,7 @@ class Azkaban(object):
         response_json = response.json()
         logging.info('%s' % (response_json[u'message']))
 
-    def cancel(self, execution_id):
+    def cancel(self, execution_id: str):
         """
         Execute command, intended to make the request to Azkaban and treat the response properly.
 
@@ -442,9 +454,10 @@ class Azkaban(object):
         evaluate the response.
 
         If the flow is not running, it will return an error message.
-
-        :param str execution_id: Execution id on Azkaban
-        :raises CancelError: when Azkaban api returns error in response
+        Args:
+            execution_id: Execution id on Azkaban
+        Raises:
+            CancelError: when Azkaban api returns error in response
         """
 
         self.__check_if_logged()
@@ -458,15 +471,15 @@ class Azkaban(object):
 
         self.__catch_response_error(response, CancelError)
 
-    def create(self, project, description):
+    def create(self, project: str, description: str):
         """
         Create command, intended to make the request to Azkaban and treat the response properly.
 
         This method receives the project name and the description, make the execute request to create the project and
         evaluate the response.
-
-        :param str project: Project name on Azkaban
-        :param str description: Description for the project
+        Args:
+            project: Project name on Azkaban
+            description: Description for the project
         """
 
         self.__check_if_logged()
@@ -483,14 +496,14 @@ class Azkaban(object):
 
         logging.info('Project %s created successfully' % (project))
 
-    def delete(self, project):
+    def delete(self, project: str):
         """
         Delete command, intended to make the request to Azkaban and treat the response properly.
 
         This method receives the project name, make the execute request to delete the project and
         evaluate the response.
-
-        :param str project: Project name on Azkaban
+        Args:
+            project: Project name on Azkaban
         """
 
         self.__check_if_logged()
@@ -504,10 +517,12 @@ class Azkaban(object):
 
         # The delete request does not return any message
 
-    def fetch_projects(self):
+    def fetch_projects(self) -> str:
         """
         Fetch all projects command, intended to make the request to Azkaban and treat the response properly.
         This method makes the fetch projects request to fetch all the projects and evaluates the response.
+        Returns:
+            Request response content in text
         """
 
         self.__check_if_logged()
@@ -523,16 +538,16 @@ class Azkaban(object):
 
         return response.text
 
-    def add_permission(self, project, group, permission_options):
+    def add_permission(self, project: str, group: str, permission_options: dict):
         """
         Add permission command, intended to make the request to Azkaban and treat the response properly.
 
         This method receives the project name, the group name, and the permission options and execute
         request to add a group permission to the project and evaluate the response.
-
-        :param str project: Project name on Azkaban
-        :param str group: Group name on Azkaban
-        :param Dictionary permission_options: The group permissions in the project on Azkaban
+        Args:
+            project: Project name on Azkaban
+            group: Group name on Azkaban
+            permission_options: The group permissions in the project on Azkaban
         """
 
         self.__check_if_logged()
@@ -552,15 +567,15 @@ class Azkaban(object):
 
         logging.info('Group [%s] add with permission [%s] in the Project [%s] successfully' % (group,  permission_options, project))
 
-    def remove_permission(self, project, group):
+    def remove_permission(self, project: str, group: str):
         """
         Remove permission command, intended to make the request to Azkaban and treat the response properly.
 
         This method receives the project name and the group name and execute
         request to remove a group permission from the project and evaluate the response.
-
-        :param str project: Project name on Azkaban
-        :param str group: Group name on Azkaban
+        Args:
+            project: Project name on Azkaban
+            group: Group name on Azkaban
         """
 
         self.__check_if_logged()
@@ -577,16 +592,16 @@ class Azkaban(object):
 
         logging.info('Group [%s] permission removed from the Project [%s] successfully' % (group, project))
 
-    def change_permission(self, project, group, permission_options):
+    def change_permission(self, project: str, group: str, permission_options: dict):
         """
         Change permission command, intended to make the request to Azkaban and treat the response properly.
 
         This method receives the project name, the group name, and the permission options and execute
         request to change a existing group permission in a project and evaluate the response.
-
-        :param str project: Project name on Azkaban
-        :param str group: Group name on Azkaban
-        :param Dictionary permission_options: The group permissions in the project on Azkaban
+        Args:
+            project: Project name on Azkaban
+            group: Group name on Azkaban
+            permission_options: The group permissions in the project on Azkaban
         """
 
         self.__check_if_logged()
@@ -606,12 +621,16 @@ class Azkaban(object):
 
         logging.info('Group [%s] AAA received new permissions [%s] in the Project [%s] successfully' % (group, permission_options, project))
 
-    def fetch_sla(self, schedule_id):
+    def fetch_sla(self, schedule_id: str) -> json:
         """
         Fetch SLA command, intended to make the request to Azkaban and treat the response properly.
         Given a schedule id, this API call fetches the SLA.
-
-        :param str schedule_id: Schedule ID on Azkaban (Find on fetch_schedule)
+        Args:
+            schedule_id: Schedule ID on Azkaban (Find on fetch_schedule)
+        Raises:
+            FetchSLAError: when Azkaban api returns error in response
+        Returns:
+            Returns the json response from the request
         """
 
         self.__check_if_logged()
@@ -625,10 +644,9 @@ class Azkaban(object):
 
         self.__catch_response_error(response, FetchSLAError)
 
-        response_json = response.json()
-        return response_json
+        return response.json()
 
-    def __check_group_permissions(self, permission_options):
+    def __check_group_permissions(self, permission_options: dict) -> dict:
         """
         Check the group permissions for the project. Catch all permission from the dict and set as True, if the option
         dont exists in this dict, set False. If no permissions are found, just set the Read default to true, as in the
@@ -640,8 +658,10 @@ class Azkaban(object):
         EXECUTE...: The user is allowed to execute, pause, cancel jobs.
         SCHEDULE..: The user is allowed to add, modify and remove a flow from the schedule.
 
-        :param Dictionary permission_options: The group permissions in the project on Azkaban
-        :return: Dictionary filled_permission_options: Dictionary containing filled permissions.
+        Args:
+           permission_options: The group permissions in the project on Azkaban
+        Returns:
+            Dictionary containing filled permissions
         """
         __options = ["admin", "write", "read", "execute", "schedule"]
         filled_permission_options = {
@@ -663,18 +683,19 @@ class Azkaban(object):
 
         return filled_permission_options
 
-    def fetch_flow_execution(self, execution_id):
+    def fetch_flow_execution(self, execution_id: str) -> json:
         """
         Fetch a flow execution command, intended to make the request to Azkaban
         and treat the response properly.
 
         This method receives the execution id, makes the fetch a flow execution request
         to fetch the flow execution details and evaluates the response.
-
-        Returns the json response from the request.
-
-        :param str execution_id: Execution id on Azkaban
-        :raises FetchFlowExecutionError: when Azkaban api returns error in response
+        Args:
+            execution_id: Execution id on Azkaban
+        Raises:
+            FetchExecutionJobsLogError: when Azkaban api returns error in response
+        Returns:
+            Returns the json response from the request
         """
 
         self.__check_if_logged()
@@ -690,22 +711,22 @@ class Azkaban(object):
 
         return response.json()
 
-    def fetch_flow_execution_updates(self, execution_id, last_update_time):
+    def fetch_flow_execution_updates(self, execution_id: str, last_update_time: str) -> json:
         """
         Fetch a flow execution updates command, intended to make the request to Azkaban
         and treat the response properly.
 
         This method receives the execution id and the last_update_time , makes the fetch a
         flow execution request to fetch the flow execution update details and evaluates the response.
-
-        Returns the json response from the request.
-
-        :param str execution_id: Execution id on Azkaban
-        :param str last_update_time: (optional) The criteria to filter by last update time.
-        Set the value to be -1 if all job information are needed. Use -lt="value"
-        to subscribe the default value, defaults to -1
-        :raises FetchFlowExecutionError: when Azkaban api returns error in response
-        :return class:`Response` object as json friendly.
+        Args:
+            execution_id: Execution id on Azkaban
+            last_update_time: (optional) The criteria to filter by last update time.
+                Set the value to be -1 if all job information are needed. Use -lt="value"
+                to subscribe the default value, defaults to -1
+        Raises:
+            FetchExecutionJobsLogError: when Azkaban api returns error in response
+        Returns:
+            Returns `Response` object as json friendly
         """
 
         self.__check_if_logged()
@@ -722,22 +743,21 @@ class Azkaban(object):
 
         return response.json()
 
-    def fetch_executions_of_a_flow(self, project, flow, start, length):
+    def fetch_executions_of_a_flow(self, project: str, flow: str, start: int, length: int) -> json:
         """
         Fetch executions of a flow command, intended to make the request to Azkaban
         and treat the response properly.
-
         This method receives the project name, the flow id, the start index of the returned list and the length of the
         returned list, it makes the fetch and evaluates the response.
-
-        Returns the json response from the request.
-
-        :param str project: Project name on Azkaban
-        :param str flow: Flow id on Azkaban
-        :param int start: Start index of the returned list
-        :param int length: Length of the returned list
-        :raises FetchExecutionsOfAFlowError: when Azkaban api returns error in response
-        :return class:`Response` object as json friendly.
+         Args:
+            project: Project name on Azkaban
+            flow: Flow id on Azkaban
+            start: Start index of the returned list
+            length: Length of the returned list
+        Raises:
+            FetchExecutionJobsLogError: when Azkaban api returns error in response
+        Returns:
+            Returns `Response` object as json friendly
         """
 
         self.__check_if_logged()
@@ -755,25 +775,22 @@ class Azkaban(object):
 
         return response.json()
 
-    def fetch_execution_job_log(self, execution_id, jobid, offset, length):
-        """Fetches the correponding job logs.
-
+    def fetch_execution_job_log(self, execution_id: str, jobid: str, offset: str, length: str) -> json:
+        """
+        Fetches the correponding job logs.
         This method receives the execution id, jobid, offset and lenght, makes a fetch
         request to get the correponding job logs and evaluates the response.
-
-        Returns the json response from the request.
-
-        :param execution_id: Execution id on Azkaban
-        :type execution_id: str
-        :param jobid: The unique id for the job to be fetched.
-        :type jobid: str
-        :param offset: The offset for the log data.
-        :type offset: str
-        :param length: The length of the log data. For example, if the offset set is
-         10 and the length is 1000, the returned log will starts from the 10th character
-         and has a length of 1000 (less if the remaining log is less than 1000 long)
-        :type length: str
-        :raises FetchExecutionJobsLogError: when Azkaban api returns error in response
+        Args:
+            exec_id: Execution id on Azkaban
+            jobid: The unique id for the job to be fetched
+            offset: The offset for the log data
+            length: The length of the log data. For example, if the offset set is 10 and the length is 1000,
+                the returned log will starts from the 10th character and has a length of 1000 
+                (less if the remaining log is less than 1000 long)  
+        Raises:
+            FetchExecutionJobsLogError: when Azkaban api returns error in response
+        Returns:
+            The json response from the request
         """
 
         self.__check_if_logged()
@@ -791,13 +808,15 @@ class Azkaban(object):
 
         return response.json()
 
-    def resume_flow_execution(self, execution_id):
-        """Resume a flow execution for the Azkaban API
-
-        :param str execution_id: Execution id to be resumed
-        :return: The response from the request made
-        :rtype: requests.Response
-        :raises ResumeFlowExecutionError: when Azkaban api returns error in response
+    def resume_flow_execution(self, execution_id: str) -> json:
+        """
+        Resume a flow execution for the Azkaban API
+         Args:
+            execution_id: Execution id to be resumed
+        Raise:
+            ResumeFlowExecutionError: when Azkaban api returns error in response
+        Returns: 
+            The response from the request made
         """
         self.__check_if_logged()
 
@@ -812,19 +831,19 @@ class Azkaban(object):
 
         return response.json()
 
-    def fetch_running_executions_of_a_flow(self, project, flow):
-        """Fetch running executions of a flow command, intended to make the request to Azkaban
+    def fetch_running_executions_of_a_flow(self, project: str, flow: str) -> json:
+        """
+        Fetch running executions of a flow command, intended to make the request to Azkaban
         and treat the response properly.
 
         This method receives the project name and the flow id, making the fetch and evaluating the response.
-
-        Returns the json response from the request.
-
-        :param project: Project name on Azkaban
-        :type project: str
-        :param flow: Flow id on Azkaban
-        :type flow: str
-        :raises FetchRunningExecutionsOfAFlowError: when Azkaban api returns error in response
+        Args:
+            project: Project name on Azkaban
+            flow: Flow id on Azkaban
+        Raise:
+            FetchRunningExecutionsOfAFlowError: when Azkaban api returns error in response
+        Returns: 
+            Returns the json response from the request
         """
 
         self.__check_if_logged()

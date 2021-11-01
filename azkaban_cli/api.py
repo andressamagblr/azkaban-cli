@@ -9,18 +9,19 @@ This module provides a set of requests for the Azkaban API
 import logging
 import os
 
-def upload_request(session, host, session_id, project, zip_path):
-    """Upload request for the Azkaban API
-
-    :param session: A session for creating the request
-    :type session: requests.Session
-    :param str host: Hostname where the request should go
-    :param str session_id: An id that the user should have when is logged in
-    :param str project: Project name on Azkaban
-    :param str zip_path: Local path from zip that will be uploaded
-    :return: The response from the request made
-    :rtype: requests.Response
-    :raises requests.exceptions.ConnectionError: if cannot connect to host
+def upload_request(session: requests.Session, host: str, session_id: str, project: str, zip_path: str) -> requests.Response:
+    """
+    Upload request for the Azkaban API
+    Args:
+        session: A session for creating the request
+        host: Hostname where the request should go
+        session_id: An id that the user should have when is logged in
+        project: Project name on Azkaban
+        zip_path: Local path from zip that will be uploaded
+    Raise:
+        requests.exceptions.ConnectionError: if cannot connect to host
+    Returns: 
+        The response from the request made
     """
 
     zip_file = open(zip_path, 'rb')
@@ -42,17 +43,18 @@ def upload_request(session, host, session_id, project, zip_path):
 
     return response
 
-def login_request(session, host, user, password):
-    """Login request for the Azkaban API
-
-    :param session: A session for creating the request
-    :type session: requests.Session
-    :param str host: Hostname where the request should go
-    :param str user: The user name
-    :param str password: The user password
-    :return: The response from the request made
-    :rtype: requests.Response
-    :raises requests.exceptions.ConnectionError: if cannot connect to host
+def login_request(session: requests.Session, host: str, user: str, password: str) -> requests.Response:
+    """
+    Login request for the Azkaban API
+    Args:
+        session: A session for creating the request
+        host: Hostname where the request should go
+        user: The user name
+        password: The user password
+    Raises:
+        requests.exceptions.ConnectionError: if cannot connect to host
+    Retunrs:
+        The response from the request made
     """
 
     response = session.post(
@@ -68,20 +70,23 @@ def login_request(session, host, user, password):
 
     return response
 
-def schedule_request(session, host, session_id, project, flow, cron, **execution_options):
-    r"""Schedule request for the Azkaban API
-
-    :param session: A session for creating the request
-    :type session: requests.Session
-    :param str host: Hostname where the request should go
-    :param str session_id: An id that the user should have when is logged in
-    :param str project: Project name that contains the flow that will be scheduled on Azkaban
-    :param str flow: Flow name to be scheduled on Azkaban
-    :param str cron: Cron expression in quartz format used to schedule
-    :param \*\*execution_options: Optional parameters to execution
-    :return: The response from the request made
-    :rtype: requests.Response
-    :raises requests.exceptions.ConnectionError: if cannot connect to host
+def schedule_request(
+    session: requests.Session, host: str, session_id: str, project: str, flow: str, cron: str, **execution_options) -> requests.Response:
+    """
+    Schedule request for the Azkaban API
+    Args:
+        session: A session for creating the request
+        session: requests.Session
+        host: Hostname where the request should go
+        session_id: An id that the user should have when is logged in
+        project: Project name that contains the flow that will be scheduled on Azkaban
+        flow: Flow name to be scheduled on Azkaban
+        cron: Cron expression in quartz format used to schedule
+        \*\*execution_options: Optional parameters to execution
+    Raises:
+        requests.exceptions.ConnectionError: if cannot connect to host
+    Returns:
+        The response from the request made
     """
 
     data = {
@@ -104,17 +109,18 @@ def schedule_request(session, host, session_id, project, flow, cron, **execution
 
     return response
 
-def fetch_flows_request(session, host, session_id, project):
-    """Fetch flows of a project request for the Azkaban API
-
-    :param session: A session for creating the request
-    :type session: requests.Session
-    :param str host: Hostname where the request should go
-    :param str session_id: An id that the user should have when is logged in
-    :param str project: Project name whose flows will be fetched on Azkaban
-    :return: The response from the request made
-    :rtype: requests.Response
-    :raises requests.exceptions.ConnectionError: if cannot connect to host
+def fetch_flows_request(session: requests.Session, host: str, session_id: str, project: str) -> requests.Response:
+    """
+    Fetch flows of a project request for the Azkaban API
+    Args:
+        session: A session for creating the request
+        host: Hostname where the request should go
+        session_id: An id that the user should have when is logged in
+        project: Project name whose flows will be fetched on Azkaban
+    Raises:
+        raises requests.exceptions.ConnectionError: if cannot connect to host
+    Returns:
+        The response from the request made
     """
 
     response = session.get(
@@ -130,19 +136,21 @@ def fetch_flows_request(session, host, session_id, project):
 
     return response
 
-def fetch_executions_of_a_flow_request(session, session_id, project, flow, start, length):
-    """fetch executions of a flow on a given project
-
-    :param session: A session for creating the request
-    :type session: requests.Session
-    :param str session_id: An id that the user should have when is logged in
-    :param str project: Project name whose flows will be fetched on Azkaban
-    :param str flow: Flow name whose schedule will be fetched on Azkaban
-    :param int start: The start index of the returned list (inclusive)
-    :param int length: The length of the returned list
-    :return: The response from the request made
-    :rtype: requests.Response
-    :raises requests.exceptions.ConnectionError: if cannot connect to host
+def fetch_executions_of_a_flow_request(session: requests.Session, session_id: str, project: str, flow: str, start: int, length:int) -> requests.Response:
+    """
+    fetch executions of a flow on a given project
+    Args:
+        session: A session for creating the request
+        session: requests.Session
+        session_id: An id that the user should have when is logged in
+        project: Project name whose flows will be fetched on Azkaban
+        flow: Flow name whose schedule will be fetched on Azkaban
+        start: The start index of the returned list (inclusive)
+        length: The length of the returned list
+    Raises:
+        requests.exceptions.ConnectionError: if cannot connect to host
+    Returns:
+        The response from the request made
     """
 
     response = session.get(
@@ -161,18 +169,19 @@ def fetch_executions_of_a_flow_request(session, session_id, project, flow, start
 
     return response
 
-def fetch_jobs_from_flow_request(session, host, session_id, project, flow):
-    """Fetch jobs of a flow of a project request for the Azkaban API
-
-    :param session: A session for creating the request
-    :type session: requests.Session
-    :param str host: Hostname where the request should go
-    :param str session_id: An id that the user should have when is logged in
-    :param str project: Project name whose flow's jobs will be fetched on Azkaban
-    :param str project: Flow id whose jobs will be fetched on Azkaban
-    :return: The response from the request made
-    :rtype: requests.Response
-    :raises requests.exceptions.ConnectionError: if cannot connect to host
+def fetch_jobs_from_flow_request(session: requests.Session, host: str, session_id: str, project: str, flow: str) -> requests.Response:
+    """
+    Fetch jobs of a flow of a project request for the Azkaban API
+    Args:
+        session: A session for creating the request
+        host: Hostname where the request should go
+        session_id: An id that the user should have when is logged in
+        project: Project name whose flow's jobs will be fetched on Azkaban
+        flow: Flow id whose jobs will be fetched on Azkaban
+    Raises:
+        requests.exceptions.ConnectionError: if cannot connect to host
+    Returns:
+        The response from the request made
     """
 
     response = session.get(
@@ -189,18 +198,18 @@ def fetch_jobs_from_flow_request(session, host, session_id, project, flow):
 
     return response
 
-def fetch_schedule_request(session, host, session_id, project_id, flow):
+def fetch_schedule_request(session: requests.Session, host: str, session_id: str, project_id: str, flow: str) -> requests.Response:
     """Fetch flow of a project request for the Azkaban API
-
-    :param session: A session for creating the request
-    :type session: requests.Session
-    :param str host: Hostname where the request should go
-    :param str session_id: An id that the user should have when is logged in
-    :param str project_id: Project ID whose flow schedule will be fetched on Azkaban
-    :param str flow: Flow name whose schedule will be fetched on Azkaban
-    :return: The response from the request made
-    :rtype: requests.Response
-    :raises requests.exceptions.ConnectionError: if cannot connect to host
+    Args:
+        session: A session for creating the request
+        host: Hostname where the request should go
+        session_id: An id that the user should have when is logged in
+        project: Project name whose flow's jobs will be fetched on Azkaban
+        project: Flow id whose jobs will be fetched on Azkaban
+    Raises:
+        requests.exceptions.ConnectionError: if cannot connect to host
+    Returns:
+        The response from the request made
     """
 
     response = session.get(
@@ -217,17 +226,18 @@ def fetch_schedule_request(session, host, session_id, project_id, flow):
 
     return response
 
-def unschedule_request(session, host, session_id, schedule_id):
-    """Unschedule request for the Azkaban API
-
-    :param session: A session for creating the request
-    :type session: requests.Session
-    :param str host: Hostname where the request should go
-    :param str session_id: An id that the user should have when is logged in
-    :param str schedule_id: Schedule id of the flow that will be unscheduled on Azkaban
-    :return: The response from the request made
-    :rtype: requests.Response
-    :raises requests.exceptions.ConnectionError: if cannot connect to host
+def unschedule_request(session: requests.Session, host: str, session_id: str, schedule_id: str) -> requests.Response:
+    """
+    Unschedule request for the Azkaban API
+    Args:
+        session: A session for creating the request
+        host: Hostname where the request should go
+        session_id: An id that the user should have when is logged in
+        schedule_id: Schedule id of the flow that will be unscheduled on Azkaban
+    Raises:
+        requests.exceptions.ConnectionError: if cannot connect to host
+    Returns:
+        The response from the request made
     """
 
     data = {
@@ -247,19 +257,20 @@ def unschedule_request(session, host, session_id, schedule_id):
 
     return response
 
-def execute_request(session, host, session_id, project, flow, **execution_options):
-    """Execute request for the Azkaban API
-
-    :param session: A session for creating the request
-    :type session: requests.Session
-    :param str host: Hostname where the request should go
-    :param str session_id: An id that the user should have when is logged in
-    :param str project: Project name that contains the flow that will be executed on Azkaban
-    :param str flow: Flow name to be executed on Azkaban
-    :param \*\*execution_options: Optional parameters to execution
-    :return: The response from the request made
-    :rtype: requests.Response
-    :raises requests.exceptions.ConnectionError: if cannot connect to host
+def execute_request(session: requests.Session, host: str, session_id: str, project: str, flow: str, **execution_options) -> requests.Response:
+    """
+    Execute request for the Azkaban API
+    Args:
+        session: A session for creating the request
+        host: Hostname where the request should go
+        session_id: An id that the user should have when is logged in
+        project: Project name that contains the flow that will be executed on Azkaban
+        flow: Flow name to be executed on Azkaban
+        \*\*execution_options: Optional parameters to execution
+    Raises:
+        requests.exceptions.ConnectionError: if cannot connect to host
+    Returns:
+        The response from the request made
     """
 
     params = {
@@ -280,17 +291,18 @@ def execute_request(session, host, session_id, project, flow, **execution_option
 
     return response
 
-def cancel_request(session, host, session_id, exec_id):
-    """Cancel an running flow for the Azkaban API
-
-    :param session: A session for creating the request
-    :type session: requests.Session
-    :param str host: Hostname where the request should go
-    :param str session_id: An id that the user should have when is logged in
-    :param str exec_id: Execution id to be canceled
-    :return: The response from the request made
-    :rtype: requests.Response
-    :raises requests.exceptions.ConnectionError: if cannot connect to host
+def cancel_request(session: requests.Session, host: str, session_id: str, exec_id: str) -> requests.Response:
+    """
+    Cancel an running flow for the Azkaban API
+    Args:
+        session: A session for creating the request
+        host: Hostname where the request should go
+        session_id: An id that the user should have when is logged in
+        exec_id: Execution id to be canceled
+    Raises:
+        requests.exceptions.ConnectionError: if cannot connect to host
+    Returns:
+        The response from the request made
     """
 
     response = session.get(
@@ -307,17 +319,19 @@ def cancel_request(session, host, session_id, exec_id):
     return response
 
 
-def create_request(session, host, session_id, project, description):
-    """Create a Project request for the Azkaban API
-
-    :param session: A session for creating the request
-    :type session: requests.Session
-    :param str session_id: An id that the user should have when is logged in
-    :param str project: Project name to be created on Azkaban
-    :param str description: The description for the project
-    :return: The response from the request made
-    :rtype: requests.Response
-    :raises requests.exceptions.ConnectionError: if cannot connect to host
+def create_request(session: requests.Session, host: str, session_id: str, project: str, description: str) -> requests.Response:
+    """
+    Create a Project request for the Azkaban API
+    Args:
+        session: A session for creating the request
+        host: Hostname where the request should go
+        session_id: An id that the user should have when is logged in
+        project: Project name to be created on Azkaban
+        description: The description for the project
+    Raises:
+        requests.exceptions.ConnectionError: if cannot connect to host
+    Returns:
+        The response from the request made
     """
 
     response = session.post(
@@ -334,15 +348,18 @@ def create_request(session, host, session_id, project, description):
 
     return response
 
-def delete_request(session, host, session_id, project):
-    """Delete a Project request for the Azkaban API
-
-    :param session: A session for creating the request
-    :type session: requests.Session
-    :param str session_id: An id that the user should have when is logged in
-    :param str project: Project name to be deleted on Azkaban:return: The response from the request made
-    :rtype: requests.Response
-    :raises requests.exceptions.ConnectionError: if cannot connect to host
+def delete_request(session: requests.Session, host: str, session_id: str, project: str) -> requests.Response:
+    """
+    Delete a Project request for the Azkaban API
+    Args:
+        session: A session for creating the request
+        host: Hostname where the request should go
+        session_id: An id that the user should have when is logged in
+        project: Project name to be deleted on Azkaban
+    Raises:
+        requests.exceptions.ConnectionError: if cannot connect to host
+    Returns:
+        The response from the request made
     """
 
     response = session.get(
@@ -358,16 +375,17 @@ def delete_request(session, host, session_id, project):
 
     return response
 
-def fetch_projects_request(session, host, session_id):
-    """Fetch all projects request for the Azkaban API
-
-    :param session: A session for creating the request
-    :type session: requests.Session
-    :param str host: Hostname where the request should go
-    :param str session_id: An id that the user should have when is logged in
-    :return: The response from the request made
-    :rtype: requests.Response
-    :raises requests.exceptions.ConnectionError: if cannot connect to host
+def fetch_projects_request(session: requests.Session, host: str, session_id: str) -> requests.Response:
+    """
+    Fetch all projects request for the Azkaban API
+     Args:
+        session: A session for creating the request
+        host: Hostname where the request should go
+        session_id: An id that the user should have when is logged in
+    Raises:
+        requests.exceptions.ConnectionError: if cannot connect to host
+    Returns:
+        The response from the request made
     """
 
     response = session.get(
@@ -381,19 +399,21 @@ def fetch_projects_request(session, host, session_id):
 
     return response
 
-def add_permission_request(session, host, session_id, project, group, permission_options):
-    """Add permission request for the Azkaban API
-
-    :param session: A session for creating the request
-    :type session: requests.Session
-    :param str host: Hostname where the request should go
-    :param str session_id: An id that the user should have when is logged in
-    :param str project: Project name that will receive group permissions on Azkaban
-    :param str group: Group name on Azkaban
-    :param Dictionary permission_options: The permissions options added to group in the project on Azkaban
-    :return: The response from the request made
-    :rtype: requests.Response
-    :raises requests.exceptions.ConnectionError: if cannot connect to host
+def add_permission_request(session: requests.Session, host: str, session_id: str, project: str, group: str, permission_options: dict) -> requests.Response:
+    """
+    Add permission request for the Azkaban API
+    Fetch all projects request for the Azkaban API
+     Args:
+        session: A session for creating the request
+        host: Hostname where the request should go
+        session_id: An id that the user should have when is logged in
+        project: Project name that will receive group permissions on Azkaban
+        group: Group name on Azkaban
+        permission_options: The permissions options added to group in the project on Azkaban
+    Raises:
+        requests.exceptions.ConnectionError: if cannot connect to host
+    Returns:
+        The response from the request made
     """
 
     response = __call_permission_api(session, host, session_id, 'addPermission', project, group, permission_options)
@@ -402,18 +422,19 @@ def add_permission_request(session, host, session_id, project, group, permission
 
     return response
 
-def remove_permission_request(session, host, session_id, project, group):
-    """Remove permission request for the Azkaban API
-
-    :param session: A session for creating the request
-    :type session: requests.Session
-    :param str host: Hostname where the request should go
-    :param str session_id: An id that the user should have when is logged in
-    :param str project: Project name that will lose group permissions on Azkaban
-    :param str group: Group name on Azkaban
-    :return: The response from the request made
-    :rtype: requests.Response
-    :raises requests.exceptions.ConnectionError: if cannot connect to host
+def remove_permission_request(session: requests.Session, host: str, session_id: str, project: str, group: str) -> requests.Response:
+    """
+    Remove permission request for the Azkaban API
+    Args:
+        session: A session for creating the request
+        host: Hostname where the request should go
+        session_id: An id that the user should have when is logged in
+        project: Project name that will lose group permissions on Azkaban
+        group: Group name on Azkaban
+    Raises:
+        requests.exceptions.ConnectionError: if cannot connect to host
+    Returns:
+        The response from the request made
     """
 
     #to remove a group permission, we have to pass all permissions as False
@@ -425,19 +446,20 @@ def remove_permission_request(session, host, session_id, project, group):
 
     return response
 
-def change_permission_request(session, host, session_id, project, group, permission_options):
-    """Change permission request for the Azkaban API
-
-    :param session: A session for creating the request
-    :type session: requests.Session
-    :param str host: Hostname where the request should go
-    :param str session_id: An id that the user should have when is logged in
-    :param str project: Project name that will receive the newly updated group permissions on Azkaban
-    :param str group: Group name on Azkaban
-    :param Dictionary permission_options: The permissions options to replace old permission for the group in the project on Azkaban
-    :return: The response from the request made
-    :rtype: requests.Response
-    :raises requests.exceptions.ConnectionError: if cannot connect to host
+def change_permission_request(session: requests.Session, host: str, session_id: str, project: str, group: str, permission_options: dict) -> requests.Response:
+    """
+    Change permission request for the Azkaban API
+    Args:
+        session: A session for creating the request
+        host: Hostname where the request should go
+        session_id: An id that the user should have when is logged in
+        project: Project name that will receive the newly updated group permissions on Azkaban
+        group: Group name on Azkaban
+        permission_options: The permissions options to replace old permission for the group in the project on Azkaban
+    Raises:
+        requests.exceptions.ConnectionError: if cannot connect to host
+    Returns:
+        The response from the request made
     """
 
     response = __call_permission_api(session, host, session_id, 'changePermission', project, group, permission_options)
@@ -447,17 +469,18 @@ def change_permission_request(session, host, session_id, project, group, permiss
     return response
 
 
-def fetch_sla_request(session, host, session_id, schedule_id):
-    """Fetch flow of a SLA request for the Azkaban API
-
-    :param session: A session for creating the request
-    :type session: requests.Session
-    :param str host: Hostname where the request should go
-    :param str session_id: An id that the user should have when is logged in
-    :param str schedule_id: The id of the shchedule.
-    :return: The response from the request made
-    :rtype: requests.Response
-    :raises requests.exceptions.ConnectionError: if cannot connect to host
+def fetch_sla_request(session: requests.Session, host: str, session_id: str, schedule_id: str) -> requests.Response:
+    """
+    Fetch flow of a SLA request for the Azkaban API
+    Args:
+        session: A session for creating the request
+        host: Hostname where the request should go
+        session_id: An id that the user should have when is logged in
+        schedule_id: The id of the shchedule
+    Raises:
+        requests.exceptions.ConnectionError: if cannot connect to host
+    Returns:
+        The response from the request made
     """
 
     response = session.get(
@@ -473,21 +496,23 @@ def fetch_sla_request(session, host, session_id, schedule_id):
 
     return response
 
-def __call_permission_api(session, host, session_id, operation, project, group, permission_options ):
+def __call_permission_api(
+    session: requests.Response, host: str, session_id: str, operation: str, project: str, group: str, permission_options: str
+    ) -> requests.Response:
     """
     This function is a utility to call permission API in Azkaban.
-
-    :param str operation:The action to be executed in Azkaban, can be with values [addPermission OU changePermission]
-    :param session: A session for creating the request
-    :type session: requests.Session
-    :param str host: Hostname where the request should go
-    :param str session_id: An id that the user should have when is logged in
-    :param str project: Project name that will receive the newly updated group permissions on Azkaban
-    :param str group: Group name on Azkaban
-    :param Dictionary permission_options: The permissions options to replace old permission for the group in the project on Azkaban
-    :return: The response from the request made
-    :rtype: requests.Response
-    :raises requests.exceptions.ConnectionError: if cannot connect to host
+    Args:
+        session: A session for creating the request
+        host: Hostname where the request should go
+        session_id: An id that the user should have when is logged in
+        operation: The action to be executed in Azkaban, can be with values [addPermission OU changePermission]
+        project: Project name that will receive the newly updated group permissions on Azkaban
+        group: Group name on Azkaban
+        permission_options: The permissions options to replace old permission for the group in the project on Azkaban
+    Raises:
+        requests.exceptions.ConnectionError: if cannot connect to host
+    Returns:
+        The response from the request made
 
     Sample request to Azkaban
     #https://azkaban.qa.globoi.com/manager?project=teste-permission-api-20190806&name=time-dmp&ajax=addPermission&permissions%5Badmin%5D=false&permissions%5Bread%5D=true&permissions%5Bwrite%5D=false&permissions%5Bexecute%5D=true&permissions%5Bschedule%5D=false&group=true
@@ -509,17 +534,18 @@ def __call_permission_api(session, host, session_id, operation, project, group, 
         }
     )
 
-def fetch_flow_execution_request(session, host, session_id, exec_id):
-    """Fetch a flow execution request for the Azkaban API
-
-    :param session: A session for creating the request
-    :type session: requests.Session
-    :param str host: Hostname where the request should go
-    :param str session_id: An id that the user should have when is logged in
-    :param str exec_id: Execution id to be fetched
-    :return: The response from the request made
-    :rtype: requests.Response
-    :raises requests.exceptions.ConnectionError: if cannot connect to host
+def fetch_flow_execution_request(session: requests.Session, host: str, session_id: str, exec_id: str) -> requests.Response:
+    """
+    Fetch a flow execution request for the Azkaban API
+    Args:
+        session: A session for creating the request
+        host: Hostname where the request should go
+        session_id: An id that the user should have when is logged in
+        exec_id: Execution id to be fetched
+    Raises:
+        requests.exceptions.ConnectionError: if cannot connect to host
+    Returns:
+        The response from the request made
     """
 
     response = session.get(
@@ -535,21 +561,22 @@ def fetch_flow_execution_request(session, host, session_id, exec_id):
 
     return response
 
-def fetch_flow_execution_updates_request(session, host, session_id, exec_id, last_update_time):
-    """Fetch a flow execution updates request for the Azkaban API
-
-    :param session: A session for creating the request
-    :type session: requests.Session
-    :param str host: Hostname where the request should go
-    :param str session_id: An id that the user should have when is logged in
-    :param str exec_id: Execution id to be fetched
-    :return: The response from the request made
-    :param last_update_time: The criteria to filter by last update time. Set the
-     value to be -1 if all job information are needed. Use -lt="value" to
-     subscribe the default value, defaults to -1
-    :type last_update_time: str, optional
-    :rtype: requests.Response
-    :raises requests.exceptions.ConnectionError: if cannot connect to host
+def fetch_flow_execution_updates_request(
+    session: requests.Session, host: str, session_id: str, exec_id: str, last_update_time: str = None
+    ) -> requests.Response:
+    """
+    Fetch a flow execution updates request for the Azkaban API
+    Args:
+        session: A session for creating the request
+        host: Hostname where the request should go
+        session_id: An id that the user should have when is logged in
+        exec_id: Execution id to be fetched
+        last_update_time: The criteria to filter by last update time. Set the value to be -1 if all 
+            job information are needed. Use -lt="value" to subscribe the default value, defaults to -1
+    Raises:
+        requests.exceptions.ConnectionError: if cannot connect to host
+    Returns:
+        The response from the request made
     """
 
     response = session.get(
@@ -566,25 +593,28 @@ def fetch_flow_execution_updates_request(session, host, session_id, exec_id, las
 
     return response
 
-def fetch_execution_job_log_request(session, host, session_id, exec_id, jobid, offset, length):
-    """Fetches the correponding job logs.
-
+def fetch_execution_job_log_request(
+    session: requests.Response, host: str, session_id: str, exec_id: str, jobid: str, offset: str, length: str
+    ) -> requests.Response:
+    """
+    Fetches the correponding job logs.
     This method receives the execution id, jobid, offset and lenght, makes a fetch
     request to get the correponding job logs and evaluates the response.
-
-    Returns the json response from the request.
-
-    :param execution_id: Execution id on Azkaban
-    :type execution_id: str
-    :param jobid: The unique id for the job to be fetched.
-    :type jobid: str
-    :param offset: The offset for the log data.
-    :type offset: str
-    :param length: The length of the log data. For example, if the offset set is
-     10 and the length is 1000, the returned log will starts from the 10th character
-     and has a length of 1000 (less if the remaining log is less than 1000 long)
-    :type length: str
-    :raises FetchExecutionJobsLogError: when Azkaban api returns error in response
+    Args:
+        session: A session for creating the request
+        host: Hostname where the request should go
+        session_id: An id that the user should have when is logged in
+        exec_id: Execution id to be fetched
+        jobid: The unique id for the job to be fetched
+        offset: The offset for the log data
+        length: The length of the log data. For example, if the offset set is 10 and the length is 1000,
+            the returned log will starts from the 10th character and has a length of 1000 
+            (less if the remaining log is less than 1000 long)
+        
+    Raises:
+        FetchExecutionJobsLogError: when Azkaban api returns error in response
+    Returns:
+         The json response from the request
     """
 
     response = session.get(
@@ -603,20 +633,18 @@ def fetch_execution_job_log_request(session, host, session_id, exec_id, jobid, o
 
     return response
 
-def resume_flow_execution(session, host, session_id, exec_id):
-    """Resume a flow execution request for the Azkaban API
-
-    :param session: A session for creating the request
-    :type session: requests.Session
-    :param str host: Hostname where the request should go
-    :param str session_id: An id that the user should have when is logged in
-    :param str exec_id: Execution id to be fetched
-    :param str session_id: An id that the user should have when is logged in
-    :param str project: Project name that will receive the newly updated group permissions on Azkaban
-    :param str project: Flow id whose executions will be fetched on Azkaban
-    :return: The response from the request made
-    :rtype: requests.Response
-    :raises requests.exceptions.ConnectionError: if cannot connect to host
+def resume_flow_execution(session: requests.Session, host: str, session_id: str , exec_id: str) -> requests.Response:
+    """
+    Resume a flow execution request for the Azkaban API
+     Args:
+        session: A session for creating the request
+        host: Hostname where the request should go
+        session_id: An id that the user should have when is logged in
+        exec_id: Execution id to be fetched
+    Raises:
+        requests.exceptions.ConnectionError: if cannot connect to host
+    Returns:
+         The response from the request made
     """
     response = session.get(
         host + '/executor',
@@ -631,16 +659,19 @@ def resume_flow_execution(session, host, session_id, exec_id):
 
     return response
 
-def fetch_running_executions_of_a_flow_request(session, host, session_id, project, flow):
-
-    """Fetch running executions of a flow
-
-    :param str session_id: An id that the user should have when is logged in
-    :param str project: Project name that will receive the newly updated group permissions on Azkaban
-    :param str project: Flow id whose executions will be fetched on Azkaban
-    :return: The response from the request made
-    :rtype: requests.Response
-    :raises requests.exceptions.ConnectionError: if cannot connect to host
+def fetch_running_executions_of_a_flow_request(session: requests.Session, host: str, session_id: str, project: str, flow: str) -> requests.Response:
+    """
+    Fetch running executions of a flow
+    Args:
+        session: A session for creating the request
+        host: Hostname where the request should go
+        session_id: An id that the user should have when is logged in
+        project: Project name that will receive the newly updated group permissions on Azkaban
+        Flow: Flow id whose executions will be fetched on Azkaban
+    Raises:
+        requests.exceptions.ConnectionError: if cannot connect to host
+    Returns:
+         The response from the request made
     """
 
     response = session.get(
